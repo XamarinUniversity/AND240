@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 1: Create a drawing application</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Touch</header>
+
+   	<section id="main">
+
+		<h1 id="page-title"></h1>
+
+		<h2>Duration</h2>
+		<p>
+			15 minutes
+		</p>
+		
+		<div class="hintblock">
+			<strong>Tip:</strong> If you are doing this exercise live in a session, make sure to make good use of the instructor,
+			they are online to answer any questions you have!
+		</div>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+		
+		<h2>Goals</h2>
+		<p>
+			The primary goal of this lab will be to create a single-touch drawing app. The screenshot below shows the finished app with
+			a simple user-created drawing.
+		</p>
+		
+		<img src="res/images/ex1_complete.png" width="240" alt="" />
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>Required assets</h2>
+		<p>
+			The Resources folder for this part contains a <strong>Start</strong> solution you will use as starter code and a
+			<strong>Completed</strong> solution you can use to check your work.
+		</p>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>Challenge</h2>
+		<p>
+			Use the high-level guidelines here to complete the exercise. 
+			Detailed instructions are provided below if you would like more information. 
+		</p>
+		<p>
+			The starter project contains a single <code>Activity</code>, which displays a custom <code>View</code>.
+			You'll add code to track and visualize touch events provided by the custom view.
+		</p>
+		<ol>
+			<li>
+				Open the <strong>XamPaint</strong> solution in the <strong>Start</strong> folder.
+			</li>
+			<li>
+				Open the <strong>PaintView.cs</strong> file. All your work will be done here.
+			</li>
+			<li>
+				Add two fields to the <code>PaintView</code> class which you will use to draw lines on the screen -
+				create a <code><a href="http://developer.android.com/reference/android/graphics/Path.html" target="_blank">Path</a></code>
+				object and a <code><a href="http://developer.android.com/reference/android/graphics/Paint.html" target="_blank">Paint</a></code> object.
+			</li>
+			<li>
+				Override the <code>OnTouchEvent</code> method.
+			</li>
+			<li>
+				Create a <code>switch</code> statement in <code>OnTouchEvent</code> based on the MotionEvent's <code>ActionMasked</code> property.
+			</li>
+			<li>
+				Update the <code>Path</code> in the switch statement as needed.
+			</li>
+			<li>
+				Draw the <code>Path</code> by overriding <code>OnDraw</code> and calling <code>DrawPath</code> on the
+				<code>canvas</code> parameter.
+			</li>
+			<li>
+				In the provided <code>Clear</code> method, call <code>Reset</code> on the <code>Path</code> and then
+				call your base's <code>Invalidate</code> method.
+			</li>
+			<li>
+				Run the app and draw!
+			</li>
+		</ol>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h1>Steps</h1>
+		<p>
+			You can either use the above guidelines or follow the step-by-step instructions shown here.
+		</p>
+
+		<h2>Open the XamPaint start solution</h2>
+		<ol>
+			<li>Open the <strong>XamPaint</strong> solution in the <strong>Start</strong> folder.</li>
+			<li>Inspect the code and run the application. You should see a mostly blank screen with a clear button at the bottom.</li>
+		</ol>
+
+		<h2>Add a <code>Paint</code> object and a <code>Path</code> object</h2>
+		<p>
+			You will add two objects to the PaintView class. A <code>Path</code> object that will be used to store a series of line
+			segments. A <code>Paint</code> object you will use when you draw the <code>Path</code> to the screen.
+		</p>
+		<ol>
+			<li>Create a class level <code>Path</code> object named <code>drawPath</code>.</li>
+			<li>Create a class level <code>Paint</code> object named <code>drawPaint</code>.</li>
+			<li>
+				Instantiate the two fields in the <code>Init</code> method.
+				<br>Set the following properties on <code>drawPaint</code>:
+				<ul>
+					<li>Set the <code>Color</code> to "Aqua"</li>
+					<li>Set the <code>StrokeWidth</code> to "5f" </li>
+					<li>Set the <code>Style</code> to <code>Paint.Style.Stroke</code> using the <code>SetStyle</code> method on the <code>Paint</code> object</li>
+				</ul>
+			</li>
+		</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'Init');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="Init" style="display:none;">
+				<pre class="prettyprint">
+Path drawPath;
+Paint drawPaint;
+...
+void Init ()
+{
+   drawPath = new Path();
+   drawPaint = new Paint()
+   {
+      Color = Color.Aqua,
+      StrokeWidth = 5f,
+   };
+   drawPaint.SetStyle (Paint.Style.Stroke);
+}</pre>
+			</div>
+			
+			<h2>Override <code>OnTouchEvent</code></h2>
+			<ol>
+				<li>Override the <code>OnTouchEvent</code> method in the <code>PaintView</code> class.</li>
+				<li>Create two local variables, <code>x</code> and <code>y</code> and retrieve the current touch location from the <code>MotionEvent</code> parameter.</li>
+			</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'OnTouchEvent');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="OnTouchEvent" style="display:none;">
+<pre class="prettyprint">
+public override bool OnTouchEvent (MotionEvent e)
+{
+   var x = e.GetX();
+   var y = e.GetY();
+}</pre>
+			</div>
+
+		<h2>
+			Create a switch statement based on <code>ActionMasked</code>
+		</h2>
+		
+		<p>
+			You need to respond when the user touches the screen and when they move a finger on screen.</p>
+		<ol>
+			<li>Create a switch statement in the <code>OnTouchEvent</code> method based on the <code>ActionMasked</code> property of the <code>MotionEvent</code>.</li>
+			<li>Add cases for <code>MotionActionEvent.Down</code> and <code>MotionActionEvent.Move</code>.</li>
+		</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'ActionMasked');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="ActionMasked" style="display:none;">
+<pre class="prettyprint">
+public override bool OnTouchEvent (MotionEvent e)
+{
+   ...
+   switch (e.ActionMasked)
+   {
+   case MotionEventActions.Down:
+      break;
+   case MotionEventActions.Move:
+      break;
+   default:
+      return false;
+   }
+   return true;
+}</pre>
+			</div>
+			<h2>Update the Path in <code>OnTouchEvent</code></h2>
+			<ol>
+				<li>When the user touches the screen, move <code>drawPath</code> to the current location by calling the <code>MoveTo</code> method.</li>
+				<li>When the user moves their finger, create a line segment to the new location by calling the <code>LineTo</code> method.</li>
+			</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'MoveTo');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="MoveTo" style="display:none;">
+<pre class="prettyprint">
+...
+case MotionEventActions.Down:
+   drawPath.MoveTo(x, y);
+   break;
+case MotionEventActions.Move:
+   drawPath.LineTo(x, y);
+   break;</pre>
+			</div>
+
+			<h2>Draw the Path</h2>
+			<p>
+				The <code>View</code> class has two methods you need to work with to draw the <code>Path</code> on the screen:
+				<code>Invalidate</code> and <code>OnDraw</code>. You override <code>OnDraw</code> and do your drawing into a canvas that
+				Android provides. You call <code>Invalidate</code> whenever your data changes and then Android calls your override
+				of <code>OnDraw</code>.
+			</p>
+			<ol>
+				<li>Override the <code>OnDraw</code> method in the <code>PaintView</code> class. Call the canvas's <code>DrawPath</code>
+				    method passing in <code>drawPath</code> and <code>drawPaint</code>.</li>
+				<li>In your override of <code>OnTouchEvent</code>, add a call to your base's <code>Invalidate</code> method when the user moves their finger.</li>
+			</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'OnDraw');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="OnDraw" style="display:none;">
+<pre class="prettyprint">
+protected override void OnDraw (Canvas canvas)
+{
+   canvas.DrawPath(drawPath, drawPaint);
+}
+
+public override bool OnTouchEvent (MotionEvent e)
+{
+   ...
+   switch (e.ActionMasked)
+   {
+   case MotionEventActions.Move:
+      drawPath.LineTo(x, y);
+      Invalidate();
+      break;
+   ...
+   }
+   return true;
+}
+</pre>
+			</div>
+
+			<h2>Clear the screen</h2>
+		<p>
+			The Clear button's Touch event handler is already connected to the <code>Clear</code> method.
+			Add code to clear the screen.
+		</p>
+		<ol>
+			<li>Call the <code>drawPath</code>'s <code>Reset</code> method.</li>
+			<li>Call <code>Invalidate</code> to refresh the screen.</li>
+			<li>Run the app and draw a picture!</li>
+		</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'Clear');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="Clear" style="display:none;">
+				<pre class="prettyprint">
+public void Clear ()
+{
+   drawPath.Reset();
+   Invalidate();
+}</pre>
+			</div>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h1>Summary</h1>
+
+		<p>
+			During this lab you applied what we have learned about single-touch events in Android to track and visualize touch
+			within a custom view.
+		</p>
+		
+		<div class="align-right">
+			<a href="../Start%20Here.html">Go Back</a>
+		</div>
+
+	</section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
