@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Create a multi-touch drawing application</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Touch</header>
+
+   	<section id="main">
+		<h1 id="page-title"></h1>
+
+		<h2>Duration</h2>
+		<p>
+			15 minutes
+		</p>
+		
+		<div class="hintblock">
+			<strong>Tip:</strong> If you are doing this exercise live in a session, make sure to make good use of the instructor,
+			they are online to answer any questions you have!
+		</div>
+		
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>Goals</h2>
+		<p>
+			In this lab, you will code a multi-touch drawing application that will let you draw several lines at the same time.
+			Each line will use a randomly-generated color.
+			The screenshot below shows the finished app with a simple user-created drawing.
+		</p>
+		<img src="res/images/ex2_complete.png" width="240" alt="" />
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>Required assets</h2>
+		<p>
+			The Resources folder for this part contains a <strong>Start</strong> solution you will use as starter code and a
+			<strong>Completed</strong> solution you can use to check your work.
+		</p>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>Challenge</h2>
+		<p>
+			Use the high-level guidelines here to complete the exercise.
+			Detailed instructions are provided below if you would like more information.
+		</p>
+		<p>
+			The starter project contains a single <code>Activity</code> that displays a custom <code>View</code>.
+			You'll add code to the custom View to track and visualize simultaneous touch events.
+		</p>
+		<ol>
+			<li>Open the XamPaint solution in the <b>Start</b> folder from the Resources for this part.</li>
+			<li>Override the <code>OnTouchEvent</code> method. All your code will be added in this method.</li>
+			<li>Create a <code>switch</code> statement based on <code>ActionMasked</code>.</li>
+			<li>Add cases to the <code>switch</code> for each of the 5 Actions you need to handle.</li>
+			<li>At the end of each case, you will need to return <code>true</code> to indicate you have handled the event.</li>
+			<li>Add a <code>default</code> case that returns <code>false</code>.</li>
+			<li>When a finger touches the screen: create a new <code>Path</code>, move the path to the initial X/Y point, and add the path to dictionary of current lines and the list of all lines. Use the pointer ID as the dictionary key. You will also need to create a new <code>Paint</code> object using the supplied helper method and add it to the <code>List</code> of <code>Paint</code>s.</li>
+			<li>When you receive a <code>Move</code> action, update all current lines so they include their new X/Y point.</li>
+			<li>When a finger leaves the screen, remove the associated <code>Path</code> from the dictionary.</li>
+			<li>Run the app to test your work.</li>
+		</ol>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h1>Steps</h1>
+		<p>
+			You can either use the above guidelines or follow the step-by-step instructions shown here.
+		</p>
+
+		<h2>
+			Open the XamPaintMultiTouch start solution
+		</h2>
+		
+		<ol>
+			<li>
+				Open the <strong>Start</strong> solution in the Resources folder for this part.
+			</li>
+
+			<li>
+				Open <strong>PaintView.cs</strong>, all your work will be done in this file.
+			</li>
+			
+			<li>
+				Locate the <code>Dictionary</code> field. It will store the lines that are currently "in process"
+				(i.e. the ones the user is currently drawing). You will add a path to this dictionary when the user
+				starts drawing a new line and remove it when they lift that finger off the screen.
+				Notice that the dictionary maps from <code>int</code> to <code>Path</code>. You will use the 
+				pointer ID as the dictionary key and the path as the value. This will let you easily lookup
+				a path using the pointer ID.
+			</li>
+			
+			<li>
+				Locate the <code>List</code> field that stores <code>Path</code> objects.
+				This will hold all the lines the user has drawn during the current session.
+				You will add a path to it whenever a new finger contacts the screen. You will not need
+				to remove lines from the list - they only need to be removed when the user clicks the
+				<strong>Clear</strong> button and that code has been provided for you. Feel free to examine the
+				implementation of the <code>Clear</code> method to see this.
+			</li>
+			
+			<li>
+				Locate the <code>List</code> field that stores <code>Paint</code> objects.
+				This will hold the paint colors used for each line. You will use the supplied
+				<code>GenerateRandomColorPaint</code> method to create a new <code>Paint</code>
+				whenever a new finger contacts the screen. You will then add the <code>Paint</code> to this 
+				list. You will not need to remove <code>Paint</code>s from the list - they only need
+				to be removed when the user clicks the <strong>Clear</strong> button and that code has been
+				provided for you. Feel free to examine the implementation of the <code>Clear</code> method to see this.
+			</li>
+			
+			<li>
+				Locate the <code>OnDraw</code> method. Notice that it redraws all lines when anything changes.
+				This technique was selected intentionally even though is not the most efficient solution.
+				It is simple to code and keeps us focused on the touch events rather than adding extra code
+				to optimize the drawing performance.
+			</li>
+		</ol>
+
+		<h2>
+			Override <code>OnTouchEvent</code>
+		</h2>
+		
+		<ol>
+			<li>
+				Override the <code>OnTouchEvent</code> method in the <code>PaintView</code> class.
+				All your work will done inside this method.
+			</li>
+			
+			<li>
+				Add a <code>switch</code> statement based on the <code>ActionMasked</code> property of the <code>MotionEvent</code> parameter.
+			</li>
+	
+			<li>
+				Add <code>case</code>s for the <code>MotionEventActions</code> values <code>Down</code>, <code>PointerDown</code>,
+				<code>Move</code>, <code>PointerUp</code> and <code>Up</code>.
+			</li>
+
+			<li>
+				At the end of each case, you will need to return <code>true</code> to indicate you have handled the event.
+			</li>
+			
+			<li>
+				Add a <code>default</code> case that returns <code>false</code>.
+			</li>
+		</ol>
+<p>
+<a href="#" onclick="toggleCode(this,'OnTouchEvent');return false;" class="uiitem">Show Code</a>
+<div class="indent-medium" id="OnTouchEvent" style="display:none;">
+<pre class="prettyprint">
+public override bool OnTouchEvent(MotionEvent e)
+{
+  switch (e.ActionMasked)
+  {
+    case MotionEventActions.Down:
+    {
+      return true;
+    }
+    case MotionEventActions.PointerDown:
+    {
+      return true;
+    }
+    case MotionEventActions.Move:
+    {
+      return true;
+    }
+    case MotionEventActions.PointerUp:
+    {
+      return true;
+    }
+    case MotionEventActions.Up:
+    {
+      return true;
+    }
+    default:
+      return false;
+  }
+}</pre>
+			</div>
+		</p>
+
+		<h2>Create a new <code>Path</code> and <code>Paint</code> when a finger touches the screen</h2>
+		<p>
+			When a finger touches the screen, you will create a new <code>Path</code> object for the finger,
+			add the starting point, and store it in both the dictionary and the list.
+			You will also need to create and store a <code>Paint</code> object for this line. 
+			These operations apply to both the <code>Down</code> and <code>PointerDown</code> cases.
+		</p>
+		<ol>
+			<li>
+				Begin in the <code>MotionEventActions.Down</code> case. In this case, you know there is just one
+				finger on the screen and information about it is at index 0.
+			</li>
+
+			<li>
+				Get the current pointer ID using the <code>GetPointerId</code> method on the <code>MotionEvent</code>,
+				passing in <code>0</code>.
+			</li>
+
+			<li>
+				Get the X and Y coordinates of the finger using the <code>GetX</code> and <code>GetY</code> methods,
+				passing in <code>0</code>.
+			</li>
+
+			<li>
+				Create a new <code>Path</code> object.
+			</li>
+
+			<li>
+				Call <code>MoveTo</code> on the path and pass it the X/Y coordinates.
+			</li>
+
+			<li>
+				Add the path to the <code>Dictionary</code> using the pointer ID as the key.
+			</li>
+
+			<li>
+				Add the path to the <code>List</code> of <code>Path</code> objects.
+			</li>
+
+			<li>
+				Use the <code>GenerateRandomColorPaint</code> method to create a <code>Paint</code> object.
+			</li>
+
+			<li>
+				Add the <code>Paint</code> to the <code>List</code> of <code>Paint</code> objects.
+			</li>
+
+			<li>
+				Repeat the above steps for the <code>MotionEventActions.PointerDown</code> case.
+				This case is used when a new finger contacts the screen while there are other fingers present.
+				The only difference between the this case and the last one is that here you must use
+				<code>ActionIndex</code> in your calls to <code>GetPointerId</code>, <code>GetX</code>, and
+				<code>GetY</code>.
+				The code for the two cases is nearly identical. If you have time, feel free to refactor
+				the code to remove the repeated parts. Note that the solution code does not do the refactoring
+				in order to keep it simple.
+			</li>
+		</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'MotionDown');return false;" class="uiitem">Show Code</a>
+			<div class="indent-medium" id="MotionDown" style="display:none;">
+				<pre class="prettyprint">
+case MotionEventActions.Down:
+{
+  float x  = e.GetX(0);
+  float y  = e.GetY(0);
+  int   id = e.GetPointerId(0);
+  var path = new Path();
+  path.MoveTo(x, y);
+  currentLines.Add(id, path);
+  allLines    .Add(path);
+  allPaints   .Add(GenerateRandomColorPaint());
+  return true;
+}
+case MotionEventActions.PointerDown:
+{
+  float x  = e.GetX(e.ActionIndex);
+  float y  = e.GetY(e.ActionIndex);
+  int   id = e.GetPointerId(e.ActionIndex);
+  var path = new Path();
+  path.MoveTo(x, y);
+  currentLines.Add(id, path);
+  allLines    .Add(path);
+  allPaints   .Add(GenerateRandomColorPaint());
+  return true;
+}</pre>
+			</div>
+		</p>
+
+		<h2>Update lines when pointers move</h2>
+		<p>
+			When a <code>Move</code> action occurs, you need to update all the current <code>Path</code>s with the new X/Y points.
+			Remember that a <code>Move</code> action reports the updated position of all fingers currently touching the screen.
+		</p>
+		<ol>
+			<li>
+				Iterate through every active pointer using a <code>for</code> loop and the <code>PointerCount</code> property
+				on the <code>MotionEvent</code>.
+			</li>
+			
+			<li>
+				Retrieve the pointer ID for the current finger using the <code>GetPointerId</code> method. Use the loop variable
+				from your <code>for</code> loop as the parameter.
+			</li>
+
+			<li>
+				Retrieve the X and Y coordinates for the current finger using the <code>GetX</code> and <code>GetY</code> methods.
+				Use the loop variable from your <code>for</code> loop as the parameter.
+			</li>
+
+			<li>
+				Retrieve a <code>Path</code> from the <code>Dictionary</code> using the pointer ID as the key.
+			</li>
+
+			<li>
+				Call <code>LineTo</code> on the <code>Path</code> and pass it the X/Y coordinates.
+			</li>
+
+			<li>
+				Outside the loop, call <code>Invalidate</code> to force a redraw of the view.
+			</li>
+		</ol>
+		<p>
+<a href="#" onclick="toggleCode(this,'MotionMove');return false;" class="uiitem">Show Code</a>
+<div class="indent-medium" id="MotionMove" style="display:none;">
+<pre class="prettyprint">
+case MotionEventActions.Move:
+{
+  for (int i = 0; i < e.PointerCount; i++)
+  {
+    float x  = e.GetX(i);
+    float y  = e.GetY(i);
+    int   id = e.GetPointerId(i);
+    currentLines[id].LineTo(x, y);
+  }
+  base.Invalidate();
+  return true;
+}
+</pre>
+			</div>
+		</p>
+
+		<h2>
+			Respond to the Up actions
+		</h2>
+		
+		<p>
+			When a finger leaves the screen, you need to remove its associated <code>Path</code> from the <code>Dictionary</code>.
+			You will be working in the <code>MotionEventActions.Up</code> and <code>MotionEventActions.PointerUp</code> cases.
+			The only difference between the two cases is the parameter you use to get the pointer ID:
+			for <code>MotionEventActions.Up</code> you use <code>0</code> and for <code>MotionEventActions.PointerUp</code>
+			you use the <code>ActionIndex</code>.
+		</p>
+
+		<ol>
+			<li>
+				Find the pointer ID using the <code>MotionEvent</code>'s <code>GetPointerId</code> method,
+				passing in <code>0</code> or the <code>ActionIndex</code> as appropriate.
+			</li>
+
+			<li>
+				Use the ID to remove the <code>Path</code> from the <code>Dictionary</code>; remember the ID is the
+				dictionary key.
+			</li>
+
+			<li>
+				Run the app to test your work.
+			</li>
+		</ol>
+		<p>
+			<a href="#" onclick="toggleCode(this,'MotionUp');return false;" class="uiitem">Show Code</a>
+<div class="indent-medium" id="MotionUp" style="display:none;">
+<pre class="prettyprint">
+case MotionEventActions.PointerUp:
+{
+  currentLines.Remove(e.GetPointerId(e.ActionIndex));
+  return true;
+}
+case MotionEventActions.Up:
+{
+  currentLines.Remove(e.GetPointerId(0));
+  return true;
+}
+</pre>
+</div>
+		</p>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h2>
+			Optimize drawing (Optional)
+		</h2>
+
+		<div class="hintblock">
+			The steps below outline how to use a bitmap to reduce the workload in the <code>OnDraw</code> callback. 
+			This requires some knowledge of the <code>Canvas</code> and <code>Bitmap</code> classes as well as many
+			changes to the current code. The guidance provided here is not complete in every detail; however, a
+			full solution is available in the <strong>Completed_OptimizedDrawing</strong> folder.
+			<strong>Due to time constraints, this part is intended to be an after-class exercise</strong>.
+		</div>
+
+		<p>
+			The current implementation redraws all the lines whenever any of them change. As a performance optimization,
+			you could draw the lines into a bitmap as the user creates them and then copy the entire bitmap to the screen
+			in <code>OnDraw</code>.
+		</p>
+
+		<ol>
+			<li>
+				Begin with the solution to the previous part. All your work here will be done in the 
+				<code>PaintView</code> class.
+			</li>
+
+			<li>
+				Remove the <code>Dictionary</code> and <code>List</code> fields that stored the <code>Path</code> objects
+				and all code that used the <code>Path</code>s throughout the <code>PaintView</code> class. The new drawing
+				technique will not use <code>Path</code>.
+			</li>
+
+			<li>
+				Add a <code>Dictionary&lt;int, Paint&gt;</code> field named <code>paints</code>. Initialize it to a new
+				instance on the line where you declare it.
+			</li>
+
+			<li>
+				A <code>Bitmap</code> is a grid of pixels. It has a width and a height. Each pixel can be addressed
+				using an X/Y coordinate pair of integers. Each pixel has a color specified using an integer.
+				<code>Bitmap</code> provides methods to get/set the values of individual pixels. There are also
+				a few methods to work with a group of pixels simultaneously. 
+				Add a <code>Bitmap</code> field named <code>drawingSurface</code> to the <code>PaintView</code> class.
+			</li>
+
+			<li>
+				A <code>Canvas</code> is a collection of drawing methods. <code>Canvas</code> does not have an intrinsic
+				destination for the drawing; you need to supply a <code>Bitmap</code> when you create the <code>Canvas</code>.
+				For example, <code>Canvas</code> has a <code>DrawLine</code> method that will calculate which pixels
+				in the underlying <code>Bitmap</code> should be modified and set those pixels for you.
+				Add a <code>Canvas</code> field named <code>drawingCanvas</code> to the <code>PaintView</code> class.
+			</li>
+
+			<li>
+				A <code>MotionEvent.PointerCoords</code> object is a container for an X/Y coordinate pair.
+				It gives you a convenient way to store the X/Y location of a touch event. This
+				implementation will use a <code>Dictionary</code> of <code>PointerCoords</code> objects
+				to remember the last X/Y coordinate pair for each finger currently on the screen. If we
+				know the previous X/Y coordinates and the current X/Y coordinates, we will be able to draw
+				a line between the two points.
+				Add a <code>Dictionary&lt;int, MotionEvent.PointerCoords&gt;</code> field named
+				<code>coords</code> to the <code>PaintView</code> class. Initialize it to a new
+				instance on the same line where you declare it.
+			</li>
+
+			<li>
+				To create a <code>Bitmap</code>, you use one of the static <code>Bitmap.Create</code> methods.
+				To create a <code>Canvas</code>, you use <code>new</code> and pass a <code>Bitmap</code> to
+				the constructor. 
+				Add the following method to your <code>PaintView</code> class. The <code>Bitmap</code> it creates will
+				match the screen dimensions. The code is inside the <code>OnSizeChanged</code>
+				method so it re-runs when the device is rotated. Note that our implementation will not preserve the
+				user's drawing across orientation changes.
+			</li>
+<pre class="prettyprint">
+protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+{
+  base.OnSizeChanged(w, h, oldw, oldh);
+  drawingSurface = Bitmap.CreateBitmap(w, h, Bitmap.Config.Argb8888); // full-screen bitmap
+  drawingCanvas  = new Canvas(drawingSurface); // the canvas will draw into the bitmap
+  paints.Clear();
+  coords.Clear();
+}
+</pre>
+
+			<li>
+				Modify the <code>Down</code> and <code>PointerDown</code> cases in your <code>OnTouchEvent</code> method.
+				The strategy is to locate the X/Y coordinate of the new touch point and add it to the <code>coords</code>
+				<code>Dictionary</code>. The key will be the pointer ID. 
+				You should also create a new <code>Paint</code> object and add it to the <code>paints</code> dictionary.
+				The code for <code>Down</code> is shown below. The code for <code>PointerDown</code> analogous so it
+				is not shown here.
+			</li>
+<pre class="prettyprint">
+case MotionEventActions.Down:
+{
+  int id = e.GetPointerId(0);
+  paints.Add(id, GenerateRandomColorPaint());
+  var start = new MotionEvent.PointerCoords();
+  e.GetPointerCoords(id, start);
+  coords.Add(id, start);
+  return true;
+}
+</pre>
+
+			<li>
+				Modify the <code>Move</code> case in your <code>OnTouchEvent</code> method.
+				The goal is to retrieve the new X/Y coordinates for each finger, grab the
+				previous X/Y coordinates from the <code>coords</code> <code>Dictionary</code>
+				and use the <code>Canvas</code>'s <code>DrawLine</code> method to draw a line
+				between those two points. Then update the X/Y coordinates in the <code>coords</code>
+				<code>Dictionary</code> to the new values. The core of the code is shown below (this
+				code will be the body of the loop).
+			</li>
+<pre class="prettyprint">
+var id = e.GetPointerId(index);
+float x = e.GetX(index);
+float y = e.GetY(index);
+drawingCanvas.DrawLine(coords[id].X, coords[id].Y, x, y, paints[id]);
+coords[id].X = x;
+coords[id].Y = y;
+</pre>
+
+			<li>
+				Modify the <code>PointerUp</code> and <code>Up</code> cases in your <code>OnTouchEvent</code> method.
+				Remove the <code>Paint</code> object from its <code>Dictionary</code>.
+				Remove the <code>PointerCoords</code> object from its <code>Dictionary</code>.
+			</li>
+
+			<li>
+				Replace your implementation of the <code>OnDraw</code> method with the one given below. This copies
+				your <code>Bitmap</code> into the <code>Canvas</code> supplied by Android. This should be more
+				efficient than redrawing all the lines as we did in the previous implementation.
+			</li>
+<pre class="prettyprint">
+protected override void OnDraw(Canvas canvas)
+{
+  canvas.DrawBitmap(drawingSurface, 0, 0, null);
+}
+</pre>
+
+			<li>
+				Replace your implementation of the <code>Clear</code> method with the one given below.
+				This overwrites all the pixels in the <code>Bitmap</code> and then forces a redraw of the screen.
+			</li>
+<pre class="prettyprint">
+public void Clear()
+{
+  drawingCanvas.DrawColor(Color.Black, PorterDuff.Mode.Clear);
+  Invalidate();
+}
+</pre>
+
+			<li>
+				Run the app to test your work. It should behave identically to the previous implementation
+				from the user's perspective.
+			</li>
+
+		</ol>
+
+		<!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+		<h1>Summary</h1>
+			<p>
+				During this lab, you applied what we have learned about multi-touch in Android to track and visualize touch
+				interactions within a custom view.
+			</p>
+			<div class="align-right">
+				<a href="../Start%20Here.html">Go Back</a>
+			</div>
+</section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
